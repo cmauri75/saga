@@ -6,24 +6,32 @@ services:
       - "4222:4222"
   vendorServiceAmazon:
     build: ./vendor-service
-    image: saga/vendorservice
+    image: saga/vendor-service
     environment:
       - NATS_SERVER=nats://nats-server:4222
       - vendor.name=Amazon
     depends_on:
       - nats-server
   vendorServiceEbay:
-    image: saga/vendorservice
+    image: saga/vendor-service
     environment:
       - NATS_SERVER=nats://nats-server:4222
       - vendor.name=Ebay
     depends_on:
       - nats-server
   vendorServiceAlibaba:
-    image: saga/vendorservice
+    image: saga/vendor-service
     environment:
       - NATS_SERVER=nats://nats-server:4222
       - vendor.name=Alibaba
     depends_on:
       - nats-server
-
+  bestPricesService:
+    build: ./best-prices-service
+    image: saga/best-prices-service
+    depends_on:
+      - nats-server
+    ports:
+      - 8080:8080
+    environment:
+      - NATS_SERVER=nats://nats-server:4222

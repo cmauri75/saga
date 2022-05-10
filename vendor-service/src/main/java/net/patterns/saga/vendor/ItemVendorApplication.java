@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 
 @Slf4j
 @SpringBootApplication
-public class ItemVendor {
+public class ItemVendorApplication {
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
@@ -19,7 +19,7 @@ public class ItemVendor {
     String natsServer;
 
     public static void main(String[] args) {
-        SpringApplication.run(ItemVendor.class, args);
+        SpringApplication.run(ItemVendorApplication.class, args);
     }
 
     @Bean

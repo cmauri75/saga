@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Builder
@@ -12,5 +12,5 @@ public class ItemSearchResponse {
     @NonNull
     private ItemSearchRequest itemSearchRequest;
     @NonNull
-    private Set<Item> itemSet;
+    private List<Item> itemList;
 }

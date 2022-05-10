@@ -1,13 +1,13 @@
 package net.patterns.saga.common.model;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.math.BigInteger;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Item {
     @NonNull
     private String name;

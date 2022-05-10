@@ -26,9 +26,8 @@
         <module>common</module>
 
         <!-- Scatter Gather example -->
-        <!--<module>best-prices-service</module>-->
+        <module>best-prices-service</module>
         <module>vendor-service</module>
-
 
         <!-- business services -->
         <!--        <module>order-service</module>
