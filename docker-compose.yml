@@ -4,4 +4,26 @@ services:
     image: nats:alpine
     ports:
       - "4222:4222"
+  vendorServiceAmazon:
+    build: ./vendor-service
+    image: saga/vendorservice
+    environment:
+      - NATS_SERVER=nats://nats-server:4222
+      - vendor.name=Amazon
+    depends_on:
+      - nats-server
+  vendorServiceEbay:
+    image: saga/vendorservice
+    environment:
+      - NATS_SERVER=nats://nats-server:4222
+      - vendor.name=Ebay
+    depends_on:
+      - nats-server
+  vendorServiceAlibaba:
+    image: saga/vendorservice
+    environment:
+      - NATS_SERVER=nats://nats-server:4222
+      - vendor.name=Alibaba
+    depends_on:
+      - nats-server
 
