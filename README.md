@@ -30,7 +30,7 @@ graph LR
 Steps:
 1. implements dto in common, Item DTO and objects for request and response
 2. implements vendor service. Data is computed and set over NATS server channel, also create docker file for release. Test depends on testcontaines for creating onthefly nats server.
-3. implements search service. It 
+3. implements search service. An async and sync version is provided. Testing is complicate due to external services dependency.
 ## Problem
 We implement the pattern to solve a typical problem:
 

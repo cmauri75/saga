@@ -3,6 +3,7 @@ package net.patterns.saga.bestpriceservice.service;
 import io.nats.client.Connection;
 import io.nats.client.Message;
 import io.nats.client.Subscription;
+import io.nats.client.support.Status;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.patterns.saga.common.model.Item;
@@ -42,7 +43,6 @@ public class ScatterGatherService {
     }
 
     public ItemSearchResponse broadcastSync(ItemSearchRequest itemSearchRequest) {
-
         String inbox = nats.createInbox();
         Subscription subscription = nats.subscribe(inbox);
 
@@ -76,7 +76,9 @@ public class ScatterGatherService {
         try {
             while (true) {
                 Message message = subscription.nextMessage(Duration.ofSeconds(1));
-                if (message == null) return ret;
+                log.info("---> {}",message);
+                if (message == null || (message.getStatus()!=null && message.getStatus().getCode()== Status.NO_RESPONDERS_CODE))
+                    return ret;
                 Optional<Item[]> items = ObjectUtil.toObject(message.getData(), Item[].class);
                 items.ifPresent(value -> ret.addAll(Arrays.asList(value)));
             }
