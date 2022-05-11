@@ -14,6 +14,7 @@
     <root level="info">
         <appender-ref ref="Console"/>
     </root>
+    <Logger name="net.patterns" level="debug"/>
     <Logger name="net.patterns.saga.vendor.service.NatsManager" level="fatal"/>
 
 </configuration>

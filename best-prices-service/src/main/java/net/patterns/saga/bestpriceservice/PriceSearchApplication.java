@@ -19,8 +19,15 @@ public class PriceSearchApplication {
     }
 
     @Bean
-    public Connection nats(@Value("${natServer.url}") String natsServer) throws IOException, InterruptedException {
-        return Nats.connect(natsServer);
+    public Connection nats(@Value("${natServer.url}") String natsServer)  {
+        try {
+            return Nats.connect(natsServer);
+        } catch (IOException e) {
+            log.info("Unable to connect to server: {}",natsServer);
+            return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

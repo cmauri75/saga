@@ -17,9 +17,13 @@ public class SearchController {
 
     private ScatterGatherService service;
 
-    @GetMapping("/{name}")
-    public Mono<ItemSearchResponse> search(@PathVariable String name) {
-        return this.service.broadcast(ItemSearchRequest.builder().item(name).build());
+    @GetMapping("/async/{name}")
+    public Mono<ItemSearchResponse> searchAsync(@PathVariable String name) {
+        return this.service.broadcastAsync(ItemSearchRequest.builder().item(name).build());
     }
 
+    @GetMapping("/sync/{name}")
+    public ItemSearchResponse searchSync(@PathVariable String name) {
+        return this.service.broadcastSync(ItemSearchRequest.builder().item(name).build());
+    }
 }

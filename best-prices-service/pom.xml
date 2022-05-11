@@ -29,6 +29,14 @@
             <groupId>io.nats</groupId>
             <artifactId>jnats</artifactId>
         </dependency>
+
+        <!--Test containers -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.17.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
