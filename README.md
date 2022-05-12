@@ -17,6 +17,7 @@ graph LR
     X1 --> B
     X2 --> B
     X3 --> B
+    B --> S[Store Service]
 ```
 
 ### Solution
@@ -24,8 +25,9 @@ graph LR
   * It uses a publisher that sends via flow messages to price providers (multiple implementation of PriceProviderService) 
     * NB: in real scenario an exagonal architecture with port/gates should be a good solution for uniformation )
   * Than data is collected into an aggregator that gives info to serivce and returns to user
-* NB: DTOs are collected in "common" module this is a questionable approach because it creates coupling between services, but for optimization purposes it's a good idea, optimal for tutorial cases.
+* NB: DTOs are collected in "common" module this is a questionable approach because it creates coupling between services Check http://www.vinsguru.com/microservices-architecture-how-to-share-dto-data-transfer-objects/ for a deep 
 * Comunications with service is provided by [NATS](https://nats.io/about/) technology, using jnat library
+* After completed best price is stored to Store Service via GRPC call
 
 Steps:
 1. implements dto in common, Item DTO and objects for request and response
@@ -44,3 +46,19 @@ NB: Any of it has it's own DB. Order is complete if and only if both payment and
 Solutions:
 * Orchestration approach: we've a separate service that orchestrate transaction, if everything is ok it marks order ok, otherwise it's cancelled.
 * Choreography approach: problem is solved basing on event-sourcing. Events can be accepted or rejected in a centralized way so no extra service is needed. Take a look to [CQRS](https://github.com/cmauri75/cqrs)
+
+### Orchestration way
+We create a separate service, which will be coordinate transactions on all microservices. If everything finishes fine, it marks the order-request completed, otherwise it calls rollbacks
+
+```mermaid
+graph LR
+    OS(OrderService) 
+    --> DBOS[DB OS]
+    OS -- "Topic (kafka)" --> OO[Order Orchestrator]
+    OS -- "Topic (kafka)" --> OO[Order Orchestrator]
+    OO --> PS[Payment Service]
+    OO --> IS[Inventory Service]
+    PS --> DBPS[DB PS]
+    IS --> DBIS[DB IS]
+    DBOS --> OS
+```

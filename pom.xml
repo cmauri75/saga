@@ -28,6 +28,7 @@
         <!-- Scatter Gather example -->
         <module>best-prices-service</module>
         <module>vendor-service</module>
+        <module>storing-service</module>
 
         <!-- business services -->
         <!--        <module>order-service</module>
@@ -89,6 +90,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
                     <skip>true</skip>
                 </configuration>
             </plugin>

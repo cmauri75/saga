@@ -1,0 +1,6 @@
+version: '3'
+services:
+  nats-server:
+    image: nats:alpine
+    ports:
+      - "4222:4222"
