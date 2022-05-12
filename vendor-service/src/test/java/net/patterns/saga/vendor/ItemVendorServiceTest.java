@@ -4,7 +4,7 @@ import io.nats.client.Connection;
 import io.nats.client.Dispatcher;
 import io.nats.client.Nats;
 import lombok.extern.slf4j.Slf4j;
-import net.patterns.saga.common.model.ItemSearchRequest;
+import net.patterns.saga.common.model.vendor.ItemSearchRequest;
 import net.patterns.saga.common.util.ObjectUtil;
 import net.patterns.saga.vendor.service.NatsManager;
 import org.junit.jupiter.api.BeforeEach;

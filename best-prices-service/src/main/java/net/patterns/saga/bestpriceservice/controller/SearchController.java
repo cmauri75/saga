@@ -2,8 +2,8 @@ package net.patterns.saga.bestpriceservice.controller;
 
 import lombok.AllArgsConstructor;
 import net.patterns.saga.bestpriceservice.service.ScatterGatherService;
-import net.patterns.saga.common.model.ItemSearchRequest;
-import net.patterns.saga.common.model.ItemSearchResponse;
+import net.patterns.saga.common.model.vendor.ItemSearchRequest;
+import net.patterns.saga.common.model.vendor.ItemSearchResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

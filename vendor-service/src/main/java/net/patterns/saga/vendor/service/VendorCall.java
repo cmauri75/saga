@@ -1,7 +1,7 @@
 package net.patterns.saga.vendor.service;
 
-import net.patterns.saga.common.model.Item;
-import net.patterns.saga.common.model.ItemSearchRequest;
+import net.patterns.saga.common.model.vendor.Item;
+import net.patterns.saga.common.model.vendor.ItemSearchRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

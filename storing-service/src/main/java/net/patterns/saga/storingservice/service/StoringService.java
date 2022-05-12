@@ -1,7 +1,7 @@
 package net.patterns.saga.storingservice.service;
 
 import lombok.extern.slf4j.Slf4j;
-import net.patterns.saga.common.model.Item;
+import net.patterns.saga.common.model.vendor.Item;
 import net.patterns.saga.common.model.storing.ItemConverter;
 import org.springframework.stereotype.Service;
 

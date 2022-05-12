@@ -1,7 +1,7 @@
 package net.patterns.saga.storingservice.controller;
 
 import lombok.AllArgsConstructor;
-import net.patterns.saga.common.model.Item;
+import net.patterns.saga.common.model.vendor.Item;
 import net.patterns.saga.common.model.storing.StoreCounter;
 import net.patterns.saga.storingservice.service.StoringService;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package net.patterns.saga.common.model;
+package net.patterns.saga.common.model.vendor;
 
 import lombok.Builder;
 import lombok.Data;

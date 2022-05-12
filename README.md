@@ -10,14 +10,14 @@ graph LR
     A(User) 
     --> B["Best Price Service | Aggreator"]
     --> C[Publisher] 
-    -->  X1[Amazon]
-    C --> X2[Ebay]
-    C --> X3[Alibaba]
+    C -- nats --> X1[Amazon]
+    C -- nats --> X2[Ebay]
+    C -- nats --> X3[Alibaba]
     B --> A
-    X1 --> B
-    X2 --> B
-    X3 --> B
-    B --> S[Store Service]
+    X1 -- nats --> B
+    X2 -- nats --> B
+    X3 -- nats --> B
+    B -- REST or gRpc --> S[Store Service]
 ```
 
 ### Solution
@@ -59,11 +59,15 @@ We create a separate service, which will be coordinate transactions on all micro
 graph LR
     OS(OrderService) 
     --> DBOS[DB OS]
-    OS -- "Topic (kafka)" --> OO[Order Orchestrator]
-    OS -- "Topic (kafka)" --> OO[Order Orchestrator]
+    OS -- "Topic (kafka or nats)" --> OO[Order Orchestrator]
+    OS -- "Topic (kafka or nats)" --> OO[Order Orchestrator]
     OO --> PS[Payment Service]
     OO --> IS[Inventory Service]
     PS --> DBPS[DB PS]
     IS --> DBIS[DB IS]
     DBOS --> OS
 ```
+
+Steps:
+1. Create dto in common package for data transfer. Should be defined using contract, in this case are direct written for using with REST
+2. Start from Order

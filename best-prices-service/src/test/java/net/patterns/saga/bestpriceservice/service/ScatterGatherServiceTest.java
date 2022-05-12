@@ -4,16 +4,14 @@ import io.nats.client.Connection;
 import io.nats.client.Nats;
 import io.nats.client.Subscription;
 import lombok.extern.slf4j.Slf4j;
-import net.patterns.saga.common.model.Item;
+import net.patterns.saga.common.model.vendor.Item;
 import net.patterns.saga.common.util.ObjectUtil;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;

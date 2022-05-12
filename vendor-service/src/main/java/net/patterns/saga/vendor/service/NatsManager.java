@@ -5,8 +5,8 @@ import io.nats.client.Dispatcher;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.patterns.saga.common.model.Item;
-import net.patterns.saga.common.model.ItemSearchRequest;
+import net.patterns.saga.common.model.vendor.Item;
+import net.patterns.saga.common.model.vendor.ItemSearchRequest;
 import net.patterns.saga.common.util.ObjectUtil;
 import org.springframework.stereotype.Service;
 

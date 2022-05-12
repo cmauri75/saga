@@ -1,6 +1,6 @@
 package net.patterns.saga.common.model.storing;
 
-import net.patterns.saga.common.model.Item;
+import net.patterns.saga.common.model.vendor.Item;
 
 import java.math.BigInteger;
 

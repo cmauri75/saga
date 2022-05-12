@@ -1,7 +1,7 @@
-package net.patterns.saga.storingservice;
+package net.patterns.saga.orderservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.patterns.saga.common.model.vendor.Item;
+import net.patterns.saga.common.model.order.OrderRequestDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,16 +10,16 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.math.BigInteger;
+import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-class StoringServiceApplicationTests {
+class OrderServiceApplicationTests {
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -27,26 +27,29 @@ class StoringServiceApplicationTests {
     private MockMvc mockMvc;
 
     @Test
-    void testStoreRest() throws Exception {
-        Item i = Item.builder().name("Coca Cola").version("2.0").vendor("Tester").price(new BigInteger("10")).build();
+    void orderServiceTest() throws Exception {
+        OrderRequestDTO order = OrderRequestDTO.builder()
+                .orderId(UUID.randomUUID())
+                .userId(-1)
+                .productId(-1)
+                .build();
 
-        mockMvc.perform(post("/storing-service/store")
-                        //.header("clientSecret", clientSecret)
-                        .content(mapper.writeValueAsString(i))
+        mockMvc.perform(MockMvcRequestBuilders.get("/order-service/")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.results", is(1)));
+                .andExpect(jsonPath("$", hasSize(1)));
 
-        mockMvc.perform(post("/storing-service/store")
-                        .content(mapper.writeValueAsString(i))
+        mockMvc.perform(post("/order-service/")
+                        .content(mapper.writeValueAsString(order))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.results", is(2)));
+                .andExpect(jsonPath("$.id", is(notNullValue())));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/storing-service/store")
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/order-service/")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.results", is(2)));
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
 

@@ -1,7 +1,7 @@
 package net.patterns.saga.vendor;
 
 import lombok.extern.slf4j.Slf4j;
-import net.patterns.saga.common.model.ItemSearchRequest;
+import net.patterns.saga.common.model.vendor.ItemSearchRequest;
 import net.patterns.saga.vendor.service.VendorCall;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

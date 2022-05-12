@@ -31,14 +31,14 @@
         <!--Commons: dtos-->
         <module>common</module>
 
-        <!-- Scatter Gather example -->
+        <!-- Scatter Gather -->
         <module>best-prices-service</module>
         <module>vendor-service</module>
         <module>storing-service</module>
 
-        <!-- business services -->
-        <!--        <module>order-service</module>
-                <module>payment-service</module>
+        <!-- ordering services -->
+        <module>order-service</module>
+        <!--        <module>payment-service</module>
                 <module>inventory-service</module> -->
 
         <!-- Service for orchestration approach -->
