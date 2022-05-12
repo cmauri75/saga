@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.math.BigInteger;
 
 import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,17 +27,17 @@ class StoringServiceApplicationTests {
     private MockMvc mockMvc;
 
     @Test
-    void testStore() throws Exception{
+    void testStoreRest() throws Exception {
         Item i = Item.builder().name("Coca Cola").version("2.0").vendor("Tester").price(new BigInteger("10")).build();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/storing-service/store")
+        mockMvc.perform(post("/storing-service/store")
                         //.header("clientSecret", clientSecret)
                         .content(mapper.writeValueAsString(i))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results", is(1)));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/storing-service/store")
+        mockMvc.perform(post("/storing-service/store")
                         .content(mapper.writeValueAsString(i))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -47,5 +48,6 @@ class StoringServiceApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.results", is(2)));
     }
+
 
 }

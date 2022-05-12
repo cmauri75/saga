@@ -26,8 +26,13 @@ graph LR
     * NB: in real scenario an exagonal architecture with port/gates should be a good solution for uniformation )
   * Than data is collected into an aggregator that gives info to serivce and returns to user
 * NB: DTOs are collected in "common" module this is a questionable approach because it creates coupling between services Check http://www.vinsguru.com/microservices-architecture-how-to-share-dto-data-transfer-objects/ for a deep 
+  * Suggested idea is to create 2 subprojects for every microservice: ms-client and ms-server, first one with dto, second one with logic. Server and all other services that should call it includes client, so dto are available with no duplication
+  * My consideration is that you can collect all one in common prj, divided by package. Some MS will include no needed data (bad practice) but it's much more agile
 * Comunications with service is provided by [NATS](https://nats.io/about/) technology, using jnat library
-* After completed best price is stored to Store Service via GRPC call
+* After completed best price is stored to Store Service via gRPC & Protobuf call
+  * I've created both REST (for sync) and Grpc implementation (in async call). Spring-grpc-starter creates a new server for managing it
+  * Protobuf uses a .proto file that defines contract. Than server and client stubs will be generated (multiple languages supported)
+  * In this solution proto is store on common module so generated DTO and stubs are by-there available. Transformer are also provided (handmade, MapStruct should be used)
 
 Steps:
 1. implements dto in common, Item DTO and objects for request and response

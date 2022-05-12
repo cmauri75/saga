@@ -42,4 +42,5 @@ services:
     environment:
       - NATS_SERVER=nats://nats-server:4222
       - storeservice.url=http://storing-service:8081/storing-service
+      - grpc.client.storing-grpc-service.address=static://storing-service:8181
 

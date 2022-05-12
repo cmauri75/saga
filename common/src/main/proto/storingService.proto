@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package net.patterns.saga.common.grps.storingservice;
+
+option java_package = "net.patterns.saga.common.grpc";
+option java_multiple_files = true;
+
+message Item {
+  string name = 1;
+  string version = 2;
+  string vendor = 3;
+  int64 price = 4;
+}
+
+message StoreRequest {
+  Item item = 1;
+}
+
+message StoreResponse {
+  int32 results = 1;
+}
+
+service StoringService {
+  rpc store(StoreRequest) returns (StoreResponse);
+}

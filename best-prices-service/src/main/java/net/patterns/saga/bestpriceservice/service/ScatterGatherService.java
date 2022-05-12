@@ -7,21 +7,23 @@ import io.nats.client.support.Status;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.devh.boot.grpc.client.inject.GrpcClient;
+import net.patterns.saga.common.grpc.StoreRequest;
+import net.patterns.saga.common.grpc.StoreResponse;
+import net.patterns.saga.common.grpc.StoringServiceGrpc;
 import net.patterns.saga.common.model.Item;
 import net.patterns.saga.common.model.ItemSearchRequest;
 import net.patterns.saga.common.model.ItemSearchResponse;
+import net.patterns.saga.common.model.storing.ItemConverter;
 import net.patterns.saga.common.model.storing.StoreCounter;
 import net.patterns.saga.common.util.ObjectUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.SynchronousSink;
 
-import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.*;
 
@@ -36,19 +38,11 @@ public class ScatterGatherService {
     @Value("${storeservice.url}")
     private String storeServiceUrl;
 
-    private WebClient webClient;
+    private RestTemplate restTemplate = new RestTemplate();
 
-    private RestTemplate restTemplate;
+    @GrpcClient("storing-grpc-service")
+    StoringServiceGrpc.StoringServiceBlockingStub storingServiceStub;
 
-
-    @PostConstruct
-    public void init() {
-        webClient = WebClient.builder()
-                .baseUrl(storeServiceUrl)
-                .build();
-
-        restTemplate = new RestTemplate();
-    }
 
     public Mono<ItemSearchResponse> broadcastAsync(ItemSearchRequest itemSearchRequest) {
         String inbox = nats.createInbox();
@@ -66,8 +60,13 @@ public class ScatterGatherService {
                 .doFirst(() -> nats.publish("item.search", inbox, ObjectUtil.toBytes(itemSearchRequest)))
                 .doOnNext(i -> {
                     Item firstItem = i.getItemList().get(0);
-                    StoreCounter result = restTemplate.postForObject(storeServiceUrl + "/store", firstItem, StoreCounter.class);
-                    log.info("WebClient executed: {}",result);
+
+                    StoreRequest storeRequest = StoreRequest.newBuilder()
+                            .setItem(ItemConverter.toGrpcItem(firstItem))
+                            .build();
+                    StoreResponse result = storingServiceStub.store(storeRequest);
+
+                    log.info("Grpc called: {}", result);
 
                     subscription.unsubscribe();
                 });
