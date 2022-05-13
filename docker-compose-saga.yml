@@ -1,0 +1,18 @@
+version: '3'
+services:
+  nats-server:
+    image: nats:alpine
+    ports:
+      - "4222:4222"
+  order-service:
+    build: ./order-service
+    image: saga/order-service
+    ports:
+      - 8082:8082
+  payment-service:
+    build: ./payment-service
+    image: saga/payment-service
+    ports:
+      - 8084:8084
+
+

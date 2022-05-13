@@ -38,8 +38,10 @@
 
         <!-- ordering services -->
         <module>order-service</module>
-        <!--        <module>payment-service</module>
-                <module>inventory-service</module> -->
+        <module>payment-service</module>
+        <!--
+        <module>inventory-service</module>
+        -->
 
         <!-- Service for orchestration approach -->
         <!--        <module>order-orchestrator</module> -->
