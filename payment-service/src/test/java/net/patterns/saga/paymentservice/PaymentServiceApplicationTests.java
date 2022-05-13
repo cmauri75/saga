@@ -35,14 +35,7 @@ class PaymentServiceApplicationTests {
 
     @Test
     void balanceTest() throws Exception {
-        PaymentRequestDTO payment = PaymentRequestDTO.builder()
-                .orderId(UUID.randomUUID())
-                .userId(-1)
-                .amount(10000d)
-                .build();
-
         mockMvc.perform(get("/payment-service/credit/-2")
-                        .content(mapper.writeValueAsString(payment))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(2000.0)));

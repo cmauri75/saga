@@ -14,6 +14,7 @@ import net.patterns.saga.paymentservice.support.DtoConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,14 +39,16 @@ public class PaymentService {
         if (userBalance.getTotalBalance() >= requestDTO.getAmount()) {
             responseDTO.setStatus(PaymentStatus.APPROVED);
             userBalance.setTotalBalance(userBalance.getTotalBalance() - requestDTO.getAmount());
-        } else responseDTO.setStatus(PaymentStatus.REJECTED);
 
-        Payment paymentLog = Payment.builder()
-                .id(UUID.randomUUID())
-                .amount(requestDTO.getAmount())
-                .transactionRef(requestDTO.getOrderId())
-                .build();
-        paymentRepository.save(paymentLog);
+            Payment paymentLog = Payment.builder()
+                    .id(UUID.randomUUID())
+                    .amount(requestDTO.getAmount())
+                    .userId(requestDTO.getUserId())
+                    .transactionRef(requestDTO.getOrderId())
+                    .build();
+            paymentRepository.save(paymentLog);
+
+        } else responseDTO.setStatus(PaymentStatus.REJECTED);
 
         return responseDTO;
     }
@@ -65,7 +68,11 @@ public class PaymentService {
     public double getCredit(Integer userId) {
         return balanceRepository
                 .findById(userId)
-                .orElse(Balance.builder().totalBalance(0d).build())
+                .orElse(Balance.builder().totalBalance(-1d).build())
                 .getTotalBalance();
+    }
+
+    public List<Payment> getPayments() {
+        return paymentRepository.findAll();
     }
 }
