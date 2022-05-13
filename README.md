@@ -70,4 +70,5 @@ graph LR
 
 Steps:
 1. Create dto in common package for data transfer. Should be defined using contract, in this case are direct written for using with REST
-2. Start from Order and create skelethon. Than call to payment and inventory via rest call, failure is not managed. NB: tests call are mocked via WireMock
+2. Create payment and inventory services, with also rollback service 
+3. Create order service that calls other service so Transaction problem is exposed (Note: tests call are mocked via WireMock)
