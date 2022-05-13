@@ -1,9 +1,7 @@
 package net.patterns.saga.paymentservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.patterns.saga.common.model.order.OrderRequestDTO;
 import net.patterns.saga.common.model.payment.PaymentRequestDTO;
-import net.patterns.saga.paymentservice.support.BalanceNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.util.NestedServletException;
 
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,14 +53,14 @@ class PaymentServiceApplicationTests {
 
 
     @Test
-    void paymentNoUserExcTest() throws Exception {
+    void paymentNoUserExcTest() {
         PaymentRequestDTO payment = PaymentRequestDTO.builder()
                 .orderId(UUID.randomUUID())
                 .userId(0)
                 .amount(10000d)
                 .build();
 
-        NestedServletException thrown = Assertions.assertThrows(NestedServletException.class, () -> {
+        Assertions.assertThrows(NestedServletException.class, () -> {
             mockMvc.perform(post("/payment-service/debit")
                     .content(mapper.writeValueAsString(payment))
                     .contentType(MediaType.APPLICATION_JSON));

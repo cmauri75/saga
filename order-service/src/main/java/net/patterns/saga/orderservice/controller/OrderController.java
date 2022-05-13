@@ -19,7 +19,7 @@ public class OrderController {
     @PostMapping("/")
     public PurchaseOrder createOrder(@RequestBody OrderRequestDTO requestDTO) {
         requestDTO.setOrderId(UUID.randomUUID());
-        return this.service.createOrder(requestDTO);
+        return this.service.createOrderNonTransactional(requestDTO);
     }
 
     @GetMapping("/")

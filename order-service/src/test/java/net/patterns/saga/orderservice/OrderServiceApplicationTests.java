@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@WireMockTest(httpPort = 18084)
+@WireMockTest(httpPort = 18080)
 class OrderServiceApplicationTests {
 
     ObjectMapper mapper = new ObjectMapper();
@@ -35,6 +35,7 @@ class OrderServiceApplicationTests {
     void orderServiceTest() throws Exception {
         // mock payment execution
         stubFor(WireMock.post("/payment-service/debit").willReturn(ok()));
+        stubFor(WireMock.post("/inventory-service/take").willReturn(ok()));
 
 
         OrderRequestDTO order = OrderRequestDTO.builder()
