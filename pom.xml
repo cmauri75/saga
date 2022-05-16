@@ -42,7 +42,7 @@
         <module>order-service</module>
 
         <!-- Service for orchestration approach -->
-        <!--        <module>order-orchestrator</module> -->
+        <module>orchestration-service</module>
     </modules>
 
     <dependencyManagement>

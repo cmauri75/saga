@@ -27,8 +27,8 @@ public class InventoryService {
 
     InventoryEventRepository inventoryEventRepository;
 
+    @Transactional
     public InventoryResponseDTO takeFromInventory(final InventoryRequestDTO requestDTO) throws StockNotFoundException {
-
         log.info("Going to take from inventory: {}", requestDTO);
         Optional<Stock> oStock = stockRepository.findById(requestDTO.getProductId());
         if (oStock.isEmpty())
