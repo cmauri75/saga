@@ -55,6 +55,9 @@ Solutions:
 ### Orchestration way
 We create a separate service, which will be coordinate transactions on all microservices. If everything finishes fine, it marks the order-request completed, otherwise it calls rollbacks
 
+Idea is that you take money from credit card, than get item from inventory. If everything is ok order is stored on local DB, otherwise everything is rollbacked.
+
+
 ```mermaid
 graph LR
     OS(OrderService) 
@@ -70,5 +73,10 @@ graph LR
 
 Steps:
 1. Create dto in common package for data transfer. Should be defined using contract, in this case are direct written for using with REST
-2. Create payment and inventory services, with also rollback service 
-3. Create order service that calls other service so Transaction problem is exposed (Note: tests call are mocked via WireMock)
+2. Create payment and inventory services, with also rollback endpoint  
+3. Create order service that stores order and than calls orchestrator service (Note: tests call are mocked via WireMock)
+   1. NB: nats is used in queue subscribe mode so non problem if multiple instances are present will occur
+4. Create orchestrator:
+   1. Define a WorkFlow that is a list of WorkflowSteps than can execute or revert and have a WorkflowStepStatus --> Pending, completed or failed
+   2. Both Inventory and Payments have their steps, so implement. Calls are reactive because are intended to be executed in parallel
+   3. 

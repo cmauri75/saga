@@ -1,4 +1,4 @@
-package net.patterns.saga.common.model.inventory;
+package net.patterns.saga.common.model.orchestrator;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,11 +8,15 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class InventoryRequestDTO {
+@NoArgsConstructor
+@Builder
+public class OrchestratorRequestDTO {
+
     private Integer userId;
     private Integer productId;
     private UUID orderId;
+    private Double amount;
+
+
 }

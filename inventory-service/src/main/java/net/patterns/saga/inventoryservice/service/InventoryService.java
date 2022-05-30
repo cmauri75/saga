@@ -49,14 +49,18 @@ public class InventoryService {
                             .productId(requestDTO.getProductId())
                             .change(-1)
                             .build());
-        } else responseDTO.setStatus(InventoryStatus.UNAVAILABLE);
+            log.debug("Done. New availability for {} is {}", requestDTO.getProductId(), stock.getQuantity());
+        } else {
+            log.debug("Out of stock for {}", requestDTO.getProductId());
+            responseDTO.setStatus(InventoryStatus.UNAVAILABLE);
+        }
 
         return responseDTO;
     }
 
     @Transactional
     public void addToInventory(final InventoryRequestDTO requestDTO) throws StockNotFoundException {
-        log.info("Going to move repository: {}", requestDTO);
+        log.info("Going to add to repository: {}", requestDTO);
 
         Optional<Stock> oStock = stockRepository.findById(requestDTO.getProductId());
         if (oStock.isEmpty())

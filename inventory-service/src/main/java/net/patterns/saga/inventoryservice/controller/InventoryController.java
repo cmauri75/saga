@@ -18,11 +18,22 @@ public class InventoryController {
     private final InventoryService service;
 
 
+    /**
+     * forward endpoint, item is removed from inventory
+     * @param requestDTO
+     * @return
+     * @throws StockNotFoundException
+     */
     @PostMapping("/take")
     public InventoryResponseDTO take(@RequestBody final InventoryRequestDTO requestDTO) throws StockNotFoundException {
         return service.takeFromInventory(requestDTO);
     }
 
+    /**
+     * rollback endpoint, item is put back to inventory
+     * @param requestDTO
+     * @throws StockNotFoundException
+     */
     @PostMapping("/put")
     public void put(@RequestBody final InventoryRequestDTO requestDTO) throws StockNotFoundException {
         service.addToInventory(requestDTO);

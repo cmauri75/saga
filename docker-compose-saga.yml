@@ -10,7 +10,14 @@ services:
     ports:
       - 8082:8082
     environment:
+      - NATS_SERVER=nats://nats-server:4222
+      - inventoryService.url=http://payment-service:8083/inventory-service
       - paymentService.url=http://payment-service:8084/payment-service
+  inventory-service:
+    build: ./inventory-service
+    image: saga/payment-service
+    ports:
+      - 8083:8083
   payment-service:
     build: ./payment-service
     image: saga/payment-service

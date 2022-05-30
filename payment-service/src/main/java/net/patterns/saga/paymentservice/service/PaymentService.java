@@ -47,8 +47,12 @@ public class PaymentService {
                     .transactionRef(requestDTO.getOrderId())
                     .build();
             paymentRepository.save(paymentLog);
+            log.debug("Payment is done. New balance for {} is {} ",requestDTO.getUserId(),userBalance.getTotalBalance());
 
-        } else responseDTO.setStatus(PaymentStatus.REJECTED);
+        } else {
+            responseDTO.setStatus(PaymentStatus.REJECTED);
+            log.debug("Sorry, user {} is out of balance",requestDTO.getUserId());
+        }
 
         return responseDTO;
     }
@@ -70,6 +74,11 @@ public class PaymentService {
                 .findById(userId)
                 .orElse(Balance.builder().totalBalance(-1d).build())
                 .getTotalBalance();
+    }
+
+    public List<Balance> getCredits() {
+        return balanceRepository
+                .findAll();
     }
 
     public List<Payment> getPayments() {

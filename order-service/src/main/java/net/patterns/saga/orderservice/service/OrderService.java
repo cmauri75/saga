@@ -1,7 +1,6 @@
 package net.patterns.saga.orderservice.service;
 
 import io.nats.client.Connection;
-import io.nats.client.Subscription;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-import static net.patterns.saga.common.util.Constants.ORCHESTRATOR_NATS_TOPIC;
+import static net.patterns.saga.common.util.Constants.ORCHESTRATOR_NATS_ORDER_SUBJECT;
 
 @Service
 @Slf4j
@@ -32,7 +31,8 @@ public class OrderService {
     @NonNull
     private final Connection nats;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @NonNull
+    private RestTemplate restTemplate;
 
     @Value("${paymentService.url}")
     private String paymentServiceUrl;
@@ -51,7 +51,7 @@ public class OrderService {
     }
 
     public PurchaseOrder createOrderNonTransactional(OrderRequestDTO orderRequestDTO) {
-        //----- START "TRANSACTION" -------------------------------
+        //----- START FALSE TRANSACTION -------------------------------
 
         log.info("Starting \"transaction\"");
 
@@ -77,33 +77,33 @@ public class OrderService {
         InventoryResponseDTO result = restTemplate.postForObject(inventoryServiceUrl + "/take", requestI, InventoryResponseDTO.class);
         log.info("Inventory got: " + result);
 
-        // ---- END TRANSACTION --------------------------------------
+        // ---- END FALSE TRANSACTION --------------------------------------
 
         return purchaseOrder;
     }
 
-
+//----------------SAGA WITH ORCHESTRATION
     public PurchaseOrder createOrderSagaOrchestration(OrderRequestDTO orderRequestDTO) {
         log.info("Starting saga orchestration transaction");
 
         //save order locally
         PurchaseOrder purchaseOrder = storeOrder(orderRequestDTO);
-        log.info("Order stored: " + purchaseOrder.getId());
+        log.info("Order stored: ", purchaseOrder.getId());
 
         //inform orchestrator
-        sendNatsMessage(purchaseOrder);
-        log.info("Orchestrator informed: " + purchaseOrder.getId());
+        OrderResponseDTO orderResponse = OrderDtoConverter.entityToDto(purchaseOrder);
+        sendNatsMessage(orderResponse);
+        log.info("Orchestrator informed: {}", orderResponse.getOrderId());
 
         return purchaseOrder;
     }
 
-    private void sendNatsMessage(PurchaseOrder purchaseOrder){
-        String inbox = nats.createInbox();
-        Subscription subscription = nats.subscribe(inbox);
-
-        //ask for results
-        nats.publish(ORCHESTRATOR_NATS_TOPIC, inbox, ObjectUtil.toBytes(purchaseOrder));
+    private void sendNatsMessage(OrderResponseDTO order) {
+        //just send message
+        nats.publish(ORCHESTRATOR_NATS_ORDER_SUBJECT, ObjectUtil.toBytes(order));
     }
+
+    //---SAGA ORCHESTRATION END------------------
 
     public List<OrderResponseDTO> getAll() {
         return this.purchaseOrderRepository.findAll()

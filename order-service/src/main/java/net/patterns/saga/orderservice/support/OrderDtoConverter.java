@@ -1,5 +1,6 @@
 package net.patterns.saga.orderservice.support;
 
+import net.patterns.saga.common.model.orchestrator.OrchestratorRequestDTO;
 import net.patterns.saga.common.model.order.OrderRequestDTO;
 import net.patterns.saga.common.model.order.OrderResponseDTO;
 import net.patterns.saga.common.model.order.OrderStatus;
@@ -9,7 +10,6 @@ public class OrderDtoConverter {
 
     private OrderDtoConverter() {
     }
-
 
     public static PurchaseOrder dtoToEntity(final OrderRequestDTO dto) {
         PurchaseOrder purchaseOrder = new PurchaseOrder();
@@ -29,17 +29,5 @@ public class OrderDtoConverter {
         dto.setAmount(purchaseOrder.getPrice());
         return dto;
     }
-
-    /*
-    public static OrchestratorRequestDTO getOrchestratorRequestDTO(OrderRequestDTO orderRequestDTO){
-        OrchestratorRequestDTO requestDTO = new OrchestratorRequestDTO();
-        requestDTO.setUserId(orderRequestDTO.getUserId());
-        requestDTO.setAmount(PRODUCT_PRICE.get(orderRequestDTO.getProductId()));
-        requestDTO.setOrderId(orderRequestDTO.getOrderId());
-        requestDTO.setProductId(orderRequestDTO.getProductId());
-        return requestDTO;
-    }
-
-     */
 
 }

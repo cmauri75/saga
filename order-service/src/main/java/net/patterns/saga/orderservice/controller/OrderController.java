@@ -1,6 +1,7 @@
 package net.patterns.saga.orderservice.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import net.patterns.saga.common.model.order.OrderRequestDTO;
 import net.patterns.saga.common.model.order.OrderResponseDTO;
 import net.patterns.saga.orderservice.entity.PurchaseOrder;
@@ -16,10 +17,19 @@ import java.util.UUID;
 public class OrderController {
     private final OrderService service;
 
+    public enum TransactType {NOTRANS, ORCHESTRATOR, CHOREOGRAPHY}
+
+    @SneakyThrows
     @PostMapping("/")
-    public PurchaseOrder createOrder(@RequestBody OrderRequestDTO requestDTO) {
+    public PurchaseOrder createOrder(@RequestBody OrderRequestDTO requestDTO, @RequestParam TransactType transactType) {
         requestDTO.setOrderId(UUID.randomUUID());
-        return this.service.createOrderNonTransactional(requestDTO);
+
+        return switch (transactType) {
+            case NOTRANS -> this.service.createOrderNonTransactional(requestDTO);
+            case ORCHESTRATOR -> this.service.createOrderSagaOrchestration(requestDTO);
+            case CHOREOGRAPHY -> new PurchaseOrder();
+        };
+
     }
 
     @GetMapping("/")

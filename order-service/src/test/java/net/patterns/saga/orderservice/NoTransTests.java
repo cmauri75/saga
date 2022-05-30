@@ -11,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -33,7 +32,7 @@ class NoTransTests {
 
     //Unfortunally external testconfig does not works
     @TestConfiguration
-    public static class WebClientConfiguration {
+    public static class NatsConfiguration {
         @Bean
         public Connection nats() throws IOException, InterruptedException {
             return OrderServiceApplicationTest.nats();
@@ -57,23 +56,22 @@ class NoTransTests {
                 .productId(-1)
                 .build();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/order-service/")
+        mockMvc.perform(MockMvcRequestBuilders.get("/order-service/?transactType=NOTRANS")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
-        mockMvc.perform(post("/order-service/")
+        mockMvc.perform(post("/order-service/?transactType=NOTRANS")
                         .content(mapper.writeValueAsString(order))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(notNullValue())));
 
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/order-service/")
+        mockMvc.perform(MockMvcRequestBuilders.get("/order-service/?transactType=NOTRANS")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }
-
 
 }
