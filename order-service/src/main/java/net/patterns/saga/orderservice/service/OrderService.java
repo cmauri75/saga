@@ -20,7 +20,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+import static net.patterns.saga.common.util.Constants.CHOREOGRAPHY_NATS_ORDER_EVENTS;
 import static net.patterns.saga.common.util.Constants.ORCHESTRATOR_NATS_ORDER_SUBJECT;
+import static net.patterns.saga.orderservice.support.OrderDtoConverter.dtoToEntity;
 
 @Service
 @Slf4j
@@ -41,7 +43,7 @@ public class OrderService {
     private String inventoryServiceUrl;
 
     private PurchaseOrder storeOrder(OrderRequestDTO orderRequestDTO) {
-        final PurchaseOrder entity = OrderDtoConverter.dtoToEntity(orderRequestDTO);
+        final PurchaseOrder entity = dtoToEntity(orderRequestDTO);
 
         //an external service should be called
         entity.setPrice(orderRequestDTO.getProductId() * 10.0d);
@@ -82,7 +84,7 @@ public class OrderService {
         return purchaseOrder;
     }
 
-//----------------SAGA WITH ORCHESTRATION
+    //----------------SAGA WITH ORCHESTRATION
     public PurchaseOrder createOrderSagaOrchestration(OrderRequestDTO orderRequestDTO) {
         log.info("Starting saga orchestration transaction");
 
@@ -92,18 +94,35 @@ public class OrderService {
 
         //inform orchestrator
         OrderResponseDTO orderResponse = OrderDtoConverter.entityToDto(purchaseOrder);
-        sendNatsMessage(orderResponse);
+        sendOrchNatsMessage(orderResponse);
         log.info("Orchestrator informed: {}", orderResponse.getOrderId());
 
         return purchaseOrder;
     }
 
-    private void sendNatsMessage(OrderResponseDTO order) {
+    private void sendOrchNatsMessage(OrderResponseDTO order) {
         //just send message
         nats.publish(ORCHESTRATOR_NATS_ORDER_SUBJECT, ObjectUtil.toBytes(order));
     }
 
     //---SAGA ORCHESTRATION END------------------
+
+    //---SAGA CHOREOGRAPHY START ------------------
+
+    public PurchaseOrder createOrderSagaChoreography(OrderRequestDTO requestDTO) {
+        //save on localDB
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.save(dtoToEntity(requestDTO));
+        sendChoreoNatsMessage(purchaseOrder);
+        return purchaseOrder;
+    }
+
+    private void sendChoreoNatsMessage(PurchaseOrder order) {
+        //just send message
+        nats.publish(CHOREOGRAPHY_NATS_ORDER_EVENTS, ObjectUtil.toBytes(order));
+    }
+
+    //---SAGA CHOREOGRAPHY END ------------------
+
 
     public List<OrderResponseDTO> getAll() {
         return this.purchaseOrderRepository.findAll()
@@ -111,5 +130,5 @@ public class OrderService {
                 .map(OrderDtoConverter::entityToDto)
                 .toList();
     }
-
 }
+

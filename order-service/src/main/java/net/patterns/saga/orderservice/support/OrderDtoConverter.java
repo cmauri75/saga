@@ -12,12 +12,12 @@ public class OrderDtoConverter {
     }
 
     public static PurchaseOrder dtoToEntity(final OrderRequestDTO dto) {
-        PurchaseOrder purchaseOrder = new PurchaseOrder();
-        purchaseOrder.setId(dto.getOrderId());
-        purchaseOrder.setProductId(dto.getProductId());
-        purchaseOrder.setUserId(dto.getUserId());
-        purchaseOrder.setStatus(OrderStatus.CREATED);
-        return purchaseOrder;
+        return PurchaseOrder.builder()
+                .id(dto.getOrderId())
+                .productId(dto.getProductId())
+                .userId(dto.getUserId())
+                .status(OrderStatus.CREATED)
+                .build();
     }
 
     public static OrderResponseDTO entityToDto(final PurchaseOrder purchaseOrder) {

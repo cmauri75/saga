@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WireMockTest(httpPort = 18080)
 class NoTransTests {
 
-    //Unfortunally external testconfig does not works
     @TestConfiguration
     public static class NatsConfiguration {
         @Bean

@@ -23,18 +23,15 @@ public class OrderController {
     @PostMapping("/")
     public PurchaseOrder createOrder(@RequestBody OrderRequestDTO requestDTO, @RequestParam TransactType transactType) {
         requestDTO.setOrderId(UUID.randomUUID());
-
         return switch (transactType) {
             case NOTRANS -> this.service.createOrderNonTransactional(requestDTO);
             case ORCHESTRATOR -> this.service.createOrderSagaOrchestration(requestDTO);
-            case CHOREOGRAPHY -> new PurchaseOrder();
+            case CHOREOGRAPHY -> this.service.createOrderSagaChoreography(requestDTO);
         };
-
     }
 
     @GetMapping("/")
     public List<OrderResponseDTO> getOrders() {
         return this.service.getAll();
     }
-
 }

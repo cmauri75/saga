@@ -1,7 +1,6 @@
 package net.patterns.saga.orderservice.entity;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import net.patterns.saga.common.model.order.OrderStatus;
 
 import javax.persistence.Entity;
@@ -11,6 +10,9 @@ import java.util.UUID;
 @Data
 @Entity
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PurchaseOrder {
     @Id
     private UUID id;

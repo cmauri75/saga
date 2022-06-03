@@ -1,6 +1,8 @@
 package net.patterns.saga.orderservice;
 
-import com.google.protobuf.CodedOutputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.nats.client.Connection;
 import io.nats.client.Message;
 import io.nats.client.Subscription;
@@ -14,10 +16,14 @@ import net.patterns.saga.orderservice.service.OrderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -26,14 +32,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @Slf4j
 @Import(OrderServiceApplicationTest.class)
 @SpringBootTest
-class SagaOrchestratorTest {
-    //mvn -Dtest=SagaOrchestratorTest -DfailIfNoTests=false test
+class SagaChoreographyTest {
+    //mvn -Dtest=SagaChoreographyTest -DfailIfNoTests=false test
 
-
-    //Unfortunally external testconfig does not works
+    //Starts a nat server
     @TestConfiguration
     public static class WebClientConfiguration {
         @Bean
@@ -56,50 +68,30 @@ class SagaOrchestratorTest {
 
     /**
      * Just checks if message sent from OrderService are received only one in a queue, so in case multiple inventory/payment service instance, only one will react
+     *
      * @throws InterruptedException
      */
     @Test
-    void testReceiveSinglePricesQueueSync() throws InterruptedException {
-        Subscription queue1 = nats.subscribe(Constants.ORCHESTRATOR_NATS_ORDER_SUBJECT, Constants.ORDER_QUEUE_NAME);
-        Subscription queue2 = nats.subscribe(Constants.ORCHESTRATOR_NATS_ORDER_SUBJECT, Constants.ORDER_QUEUE_NAME);
+    void testChoreoOrder() throws InterruptedException {
+        Subscription resQueuePay = nats.subscribe(Constants.CHOREOGRAPHY_NATS_ORDER_EVENTS, Constants.PAYMENTS_QUEUE_NAME);
+        Subscription resQueueInv = nats.subscribe(Constants.CHOREOGRAPHY_NATS_ORDER_EVENTS, Constants.INVENTORY_QUEUE_NAME);
 
-        service.createOrderSagaOrchestration(testOrder);
+        //sends message to payment and inventory services
+        service.createOrderSagaChoreography(testOrder);
 
-        List<Message> messages = new ArrayList<>();
 
-        try {
-
-        }
-        catch (OutOfMemoryError e){
-
-        }
-        catch (CodedOutputStream.OutOfSpaceException) {
-
+        Message payMessage = resQueuePay.nextMessage(Duration.ofSeconds(1));
+        if (payMessage != null) {
+            log.info("received payMessage");
         }
 
-        Message message1 = queue1.nextMessage(Duration.ofSeconds(1));
-        if (message1 != null) {
-            log.info("received msg on sub1");
-            messages.add(message1);
+        Message invMessage = resQueueInv.nextMessage(Duration.ofSeconds(1));
+        if (invMessage != null) {
+            log.info("received invMessage");
         }
 
-        Message message2 = queue2.nextMessage(Duration.ofSeconds(1));
-        if (message2 != null) {
-            log.info("received msg on sub2");
-            messages.add(message2);
-        }
-
-        Assertions.assertEquals(1, messages.size());
-
-        Optional<OrderResponseDTO> opOrder = ObjectUtil.toObject(messages.get(0).getData(), OrderResponseDTO.class);
-
-        Assertions.assertTrue(opOrder.isPresent());
-
-        OrderResponseDTO pOrder = opOrder.get();
-
-        Assertions.assertEquals(testOrder.getUserId(), pOrder.getUserId());
-        Assertions.assertEquals(testOrder.getProductId(), pOrder.getProductId());
-        Assertions.assertEquals(OrderStatus.CREATED, pOrder.getStatus());
+        Assertions.assertNotNull(payMessage);
+        Assertions.assertNotNull(invMessage);
     }
 
 }
